@@ -35,7 +35,7 @@
         </div>
     @endif
 
-    <!-- Users Table - Yajra DataTables with Minimalist Modern Styling -->
+    
     <div class="table-container">
         <table id="usersTable" class="w-full">
             <thead>

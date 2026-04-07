@@ -37,7 +37,7 @@
         </div>
     @endif
 
-    <!-- Roles Table - Yajra DataTables with Minimalist Modern Styling -->
+   
     <div class="table-container">
         <table id="rolesTable" class="w-full">
             <thead>
