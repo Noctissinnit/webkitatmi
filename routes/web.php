@@ -27,27 +27,31 @@ Route::middleware('auth')->group(function () {
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Employee management routes
-    Route::resource('employees', EmployeeController::class);
+    Route::get('employees/template/download', [EmployeeController::class, 'downloadTemplate'])->name('employees.downloadTemplate');
     Route::get('employees/data', [EmployeeController::class, 'getEmployees'])->name('employees.getEmployees');
     Route::post('employees/import', [EmployeeController::class, 'import'])->name('employees.import');
     Route::get('employees/export', [EmployeeController::class, 'export'])->name('employees.export');
+    Route::resource('employees', EmployeeController::class);
 
     // Admin routes
     Route::middleware('role:admin')->group(function () {
         Route::get('admin', [DashboardController::class, 'index'])->name('admin.dashboard');
         Route::post('admin/extensions/{extension}/install', [DashboardController::class, 'installExtension'])->name('admin.extensions.install');
         
+        // User management
+        Route::get('users/data', [UserController::class, 'getUsers'])->name('users.getUsers');
+        Route::resource('users', UserController::class);
+        
+        // Role management
+        Route::get('roles/data', [RoleController::class, 'getRoles'])->name('roles.getRoles');
+        Route::resource('roles', RoleController::class);
+        
         // Employee management
-        Route::resource('admin/employees', EmployeeController::class, [
+        Route::get('admin/employees/data', [AdminEmployeeController::class, 'getEmployees'])->name('admin.employees.getData');
+        Route::resource('admin/employees', AdminEmployeeController::class, [
             'names' => 'admin.employees',
             'parameters' => ['employees' => 'employee'],
         ]);
     });
-
-    // Role management routes
-    Route::middleware('role:admin')->resource('roles', RoleController::class);
-
-    // User management routes
-    Route::middleware('role:admin')->resource('users', UserController::class);
 });
 

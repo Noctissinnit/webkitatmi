@@ -1,134 +1,110 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Users Management') }}
-            </h2>
-            <a href="{{ route('users.create') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-medium">
-                {{ __('Create User') }}
-            </a>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Users Management') }}
+        </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="mb-4 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <!-- Desktop Table View -->
-            <div class="hidden md:block bg-white shadow-sm rounded-lg overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roles</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse($users as $user)
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {{ $user->name }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                        {{ $user->email }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        @if($user->roles->count() > 0)
-                                            <div class="flex gap-1 flex-wrap">
-                                                @foreach($user->roles as $role)
-                                                    <span class="px-2 py-1 text-xs font-semibold text-white bg-indigo-600 rounded-full">
-                                                        {{ $role->name }}
-                                                    </span>
-                                                @endforeach
-                                            </div>
-                                        @else
-                                            <span class="text-gray-400">No roles</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                        <a href="{{ route('users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900 font-medium">Edit</a>
-                                        @if(auth()->user()->id !== $user->id)
-                                            <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline-block" onsubmit="return confirm('Delete this user?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900 font-medium">Delete</button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">
-                                        No users found.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Mobile Card View -->
-            <div class="md:hidden space-y-4">
-                @forelse($users as $user)
-                    <div class="bg-white rounded-lg shadow-sm p-4 space-y-3">
-                        <div>
-                            <p class="text-xs text-gray-500 uppercase">Name</p>
-                            <p class="font-semibold text-gray-900">{{ $user->name }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 uppercase">Email</p>
-                            <p class="text-sm text-gray-600">{{ $user->email }}</p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 uppercase">Roles</p>
-                            @if($user->roles->count() > 0)
-                                <div class="flex gap-1 flex-wrap mt-1">
-                                    @foreach($user->roles as $role)
-                                        <span class="px-2 py-1 text-xs font-semibold text-white bg-indigo-600 rounded-full">
-                                            {{ $role->name }}
-                                        </span>
-                                    @endforeach
-                                </div>
-                            @else
-                                <p class="text-gray-400 text-sm">No roles</p>
-                            @endif
-                        </div>
-                        <div class="pt-3 border-t flex gap-2">
-                            <a href="{{ route('users.edit', $user) }}" class="flex-1 text-center px-3 py-2 bg-indigo-600 text-white rounded text-sm font-medium hover:bg-indigo-700">Edit</a>
-                            @if(auth()->user()->id !== $user->id)
-                                <form action="{{ route('users.destroy', $user) }}" method="POST" class="flex-1" onsubmit="return confirm('Delete this user?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-full px-3 py-2 bg-red-600 text-white rounded text-sm font-medium hover:bg-red-700">Delete</button>
-                                </form>
-                            @endif
-                        </div>
-                    </div>
-                @empty
-                    <div class="bg-white rounded-lg shadow-sm p-8 text-center text-gray-500">
-                        No users found.
-                    </div>
-                @endforelse
-            </div>
-
-            <!-- Pagination -->
-            <div class="mt-6">
-                {{ $users->links() }}
-            </div>
-        </div>
+    <!-- Action Buttons -->
+    <div class="mb-6 flex gap-2 flex-wrap">
+        <a href="{{ route('users.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors duration-200">
+            <i class="fas fa-plus w-4 h-4"></i>
+            {{ __('Create User') }}
+        </a>
     </div>
+
+    @if (session('success'))
+        <div class="mb-4 p-4 rounded-lg bg-green-50 border border-green-200">
+            <p class="text-green-800 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                {{ session('success') }}
+            </p>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-200">
+            <p class="text-red-800 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                {{ session('error') }}
+            </p>
+        </div>
+    @endif
+
+    <!-- Users Table - Yajra DataTables with Minimalist Modern Styling -->
+    <div class="table-container">
+        <table id="usersTable" class="w-full">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th style="text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    @push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/employees-table.css') }}">
+    @endpush
+
+    @push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#usersTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('users.getUsers') }}',
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, width: '5%'},
+                    {data: 'name', name: 'name'},
+                    {data: 'email', name: 'email'},
+                    {data: 'roles', name: 'roles', orderable: false, searchable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false, width: '15%'}
+                ],
+                columnDefs: [
+                    {
+                        targets: -1,
+                        render: function(data, type, row) {
+                            return data;
+                        }
+                    }
+                ],
+                language: {
+                    "processing": "Memproses...",
+                    "lengthMenu": "Tampilkan _MENU_ data",
+                    "zeroRecords": "Tidak ditemukan data",
+                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ data",
+                    "infoEmpty": "Menampilkan 0 hingga 0 dari 0 data",
+                    "infoFiltered": "(difilter dari _MAX_ data total)",
+                    "search": "Cari:",
+                    "paginate": {
+                        "first": "Pertama",
+                        "last": "Terakhir",
+                        "next": "Selanjutnya",
+                        "previous": "Sebelumnya"
+                    }
+                },
+                dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>t<"row"<"col-sm-5"i><"col-sm-7"p>>',
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                drawCallback: function() {
+                    $('.dataTables_paginate').addClass('mt-4 pt-4 border-t border-gray-200');
+                }
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

@@ -1,102 +1,103 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                👥 {{ __('Daftar Karyawan') }}
-            </h2>
-            <a href="{{ route('admin.employees.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
-                + Tambah Karyawan
-            </a>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            👥 {{ __('Daftar Karyawan') }}
+        </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <p class="text-green-700 text-sm font-medium">✓ {{ session('success') }}</p>
-                </div>
-            @endif
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-gray-900">
-                        <thead class="bg-gray-50 border-b border-gray-200">
-                            <tr>
-                                <th class="px-6 py-3 text-left font-semibold text-gray-700">Nama</th>
-                                <th class="px-6 py-3 text-left font-semibold text-gray-700">Email</th>
-                                <th class="px-6 py-3 text-left font-semibold text-gray-700">Posisi</th>
-                                <th class="px-6 py-3 text-left font-semibold text-gray-700">Departemen</th>
-                                <th class="px-6 py-3 text-left font-semibold text-gray-700">Status</th>
-                                <th class="px-6 py-3 text-left font-semibold text-gray-700">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            @forelse($employees as $employee)
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center gap-3">
-                                            @if($employee->photo)
-                                                <img src="{{ Storage::url($employee->photo) }}" alt="{{ $employee->name }}" class="w-8 h-8 rounded-full object-cover">
-                                            @else
-                                                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-semibold text-indigo-700">
-                                                    {{ substr($employee->name, 0, 1) }}
-                                                </div>
-                                            @endif
-                                            <span class="font-medium text-gray-900">{{ $employee->name }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-gray-600">{{ $employee->email }}</td>
-                                    <td class="px-6 py-4 text-gray-600">{{ $employee->position ?? '-' }}</td>
-                                    <td class="px-6 py-4 text-gray-600">{{ $employee->department ?? '-' }}</td>
-                                    <td class="px-6 py-4">
-                                        @if($employee->status === 'active')
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                Aktif
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                {{ ucfirst($employee->status) }}
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex gap-2">
-                                            <a href="{{ route('admin.employees.edit', $employee) }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
-                                                Edit
-                                            </a>
-                                            <form action="{{ route('admin.employees.destroy', $employee) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">
-                                                    Hapus
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="px-6 py-8 text-center">
-                                        <div class="flex flex-col items-center">
-                                            <div class="text-4xl mb-3">📭</div>
-                                            <p class="text-gray-500 font-medium">Belum ada karyawan</p>
-                                            <p class="text-gray-400 text-sm mt-1">Mulai dengan <a href="{{ route('admin.employees.create') }}" class="text-indigo-600 hover:text-indigo-700 font-medium">membuat karyawan baru</a></p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                @if($employees->hasPages())
-                    <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
-                        {{ $employees->links() }}
-                    </div>
-                @endif
-            </div>
-        </div>
+    <!-- Action Buttons -->
+    <div class="mb-6 flex gap-2 flex-wrap">
+        <a href="{{ route('admin.employees.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors duration-200">
+            <i class="fas fa-plus w-4 h-4"></i>
+            Tambah Karyawan
+        </a>
     </div>
+
+    @if (session('success'))
+        <div class="mb-4 p-4 rounded-lg bg-green-50 border border-green-200">
+            <p class="text-green-800 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                {{ session('success') }}
+            </p>
+        </div>
+    @endif
+
+    <!-- Admin Employees Table - Yajra DataTables with Minimalist Modern Styling -->
+    <div class="table-container">
+        <table id="employeesTable" class="w-full">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Posisi</th>
+                    <th>Departemen</th>
+                    <th>Status</th>
+                    <th style="text-align: center;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    @push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/employees-table.css') }}">
+    @endpush
+
+    @push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#employeesTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('admin.employees.getData') }}',
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, width: '5%'},
+                    {data: 'name_display', name: 'name', orderable: false, searchable: false},
+                    {data: 'email', name: 'email'},
+                    {data: 'position', name: 'position'},
+                    {data: 'department', name: 'department'},
+                    {data: 'status_display', name: 'status', orderable: false, searchable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false, width: '15%'}
+                ],
+                columnDefs: [
+                    {
+                        targets: -1,
+                        render: function(data, type, row) {
+                            return data;
+                        }
+                    }
+                ],
+                language: {
+                    "processing": "Memproses...",
+                    "lengthMenu": "Tampilkan _MENU_ data",
+                    "zeroRecords": "Tidak ditemukan data",
+                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ data",
+                    "infoEmpty": "Menampilkan 0 hingga 0 dari 0 data",
+                    "infoFiltered": "(difilter dari _MAX_ data total)",
+                    "search": "Cari:",
+                    "paginate": {
+                        "first": "Pertama",
+                        "last": "Terakhir",
+                        "next": "Selanjutnya",
+                        "previous": "Sebelumnya"
+                    }
+                },
+                dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>t<"row"<"col-sm-5"i><"col-sm-7"p>>',
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                drawCallback: function() {
+                    $('.dataTables_paginate').addClass('mt-4 pt-4 border-t border-gray-200');
+                }
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

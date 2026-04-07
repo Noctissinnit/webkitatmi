@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EmployeeController extends Controller
 {
@@ -84,20 +85,21 @@ class EmployeeController extends Controller
     public function getEmployees(Request $request)
     {
         if ($request->ajax()) {
-            $data = Employee::all();
+            $data = Employee::query();
 
             return datatables()
-                ->of($data)
+                ->eloquent($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    $actionBtn = '<div class="flex gap-2">';
-                    $actionBtn .= '<a href="'.route('employees.edit', $row->id).'" class="inline-flex items-center px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded text-sm hover:bg-indigo-200">Edit</a>';
-                    $actionBtn .= '<form action="'.route('employees.destroy', $row->id).'" method="POST" class="inline" onsubmit="return confirm(\'Yakin ingin menghapus?\');">';
-                    $actionBtn .= csrf_field();
-                    $actionBtn .= method_field('DELETE');
-                    $actionBtn .= '<button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200">Hapus</button>';
-                    $actionBtn .= '</form></div>';
-                    return $actionBtn;
+                    $edit = '<a href="'.route('employees.edit', $row->id).'" class="text-indigo-600 hover:text-indigo-700 font-medium">Edit</a>';
+                    
+                    $delete = '<form action="'.route('employees.destroy', $row->id).'" method="POST" class="inline" onsubmit="return confirm(\'Yakin ingin menghapus?\');">';
+                    $delete .= csrf_field();
+                    $delete .= method_field('DELETE');
+                    $delete .= '<button type="submit" class="text-red-600 hover:text-red-700 font-medium">Hapus</button>';
+                    $delete .= '</form>';
+                    
+                    return '<div class="employees-table-actions">'.$edit.' | '.$delete.'</div>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -116,9 +118,14 @@ class EmployeeController extends Controller
         try {
             $file = $request->file('file');
             $import = new \App\Imports\EmployeesImport();
-            $import->import($file);
+            Excel::import($import, $file);
 
-            return back()->with('success', 'Data karyawan berhasil diimport');
+            $message = 'Data karyawan berhasil diimport: ' . $import->getImported() . ' data baru ditambahkan';
+            if ($import->getSkipped() > 0) {
+                $message .= ', ' . $import->getSkipped() . ' data diperbarui karena email sudah ada';
+            }
+
+            return back()->with('success', $message);
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal import data: ' . $e->getMessage());
         }
@@ -129,6 +136,14 @@ class EmployeeController extends Controller
      */
     public function export()
     {
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\EmployeesExport, 'karyawan.xlsx');
+        return Excel::download(new \App\Exports\EmployeesExport, 'karyawan.xlsx');
+    }
+
+    /**
+     * Download template Excel untuk import
+     */
+    public function downloadTemplate()
+    {
+        return Excel::download(new \App\Exports\EmployeeTemplateExport, 'template_karyawan.xlsx');
     }
 }

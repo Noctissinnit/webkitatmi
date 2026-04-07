@@ -28,66 +28,88 @@
     @endif
 
     <!-- Action Buttons -->
-    <div class="mb-6 flex gap-3 flex-wrap">
-        <a href="{{ route('employees.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Tambah Karyawan
+    <div class="mb-8 flex gap-2 flex-wrap">
+        <a href="{{ route('employees.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors duration-200">
+            <i class="fas fa-plus w-4 h-4"></i>
+            Tambah
         </a>
 
-        <a href="{{ route('employees.export') }}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Export Excel
+        <a href="{{ route('employees.downloadTemplate') }}" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <i class="fas fa-download w-4 h-4"></i>
+            Template
         </a>
 
-        <button type="button" onclick="document.getElementById('importModal').classList.remove('hidden')" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Import Excel
+        <a href="{{ route('employees.export') }}" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <i class="fas fa-file-excel w-4 h-4"></i>
+            Export
+        </a>
+
+        <button type="button" onclick="document.getElementById('importModal').classList.remove('hidden')" class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <i class="fas fa-upload w-4 h-4"></i>
+            Import
         </button>
     </div>
 
-    <!-- DataTable -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table id="employeesTable" class="w-full border-collapse">
-            <thead>
-                <tr class="bg-gray-50 border-b">
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departemen</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jabatan</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <!-- DataTable - Minimalist Modern -->
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <div class="overflow-x-auto">
+            <table id="employeesTable" class="w-full">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>Departemen</th>
+                        <th>Jabatan</th>
+                        <th style="text-align: center;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Import Modal -->
-    <div id="importModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h2 class="text-xl font-bold mb-4">Import Excel</h2>
+    <div id="importModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md border border-gray-200">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">Import Excel</h2>
+                <button onclick="document.getElementById('importModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 transition">
+                    <i class="fas fa-times w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <div class="flex gap-3">
+                    <i class="fas fa-info-circle text-gray-600 flex-shrink-0 mt-0.5"></i>
+                    <p class="text-sm text-gray-700">
+                        Download template terlebih dahulu untuk memastikan format data yang benar.
+                    </p>
+                </div>
+            </div>
             
             <form action="{{ route('employees.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Pilih File Excel</label>
-                    <input type="file" name="file" accept=".xlsx,.xls,.csv" class="block w-full border border-gray-300 rounded-lg px-3 py-2" required>
-                    <p class="text-xs text-gray-500 mt-2">Format: .xlsx, .xls, atau .csv</p>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Pilih File Excel</label>
+                    <div class="relative">
+                        <input type="file" name="file" accept=".xlsx,.xls,.csv" id="fileInput" class="hidden" required>
+                        <label for="fileInput" class="block border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition">
+                            <i class="fas fa-file-excel text-gray-400 text-2xl mb-2"></i>
+                            <p class="text-sm text-gray-700">Klik atau drag file</p>
+                            <p class="text-xs text-gray-500 mt-1">Format: .xlsx, .xls, .csv</p>
+                        </label>
+                        <p id="fileName" class="text-sm text-gray-600 mt-2"></p>
+                    </div>
                 </div>
 
                 <div class="flex gap-3">
-                    <button type="button" onclick="document.getElementById('importModal').classList.add('hidden')" class="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    <button type="button" onclick="document.getElementById('importModal').classList.add('hidden')" class="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm font-medium">
                         Batal
                     </button>
-                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <button type="submit" class="flex-1 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm font-medium">
                         Import
                     </button>
                 </div>
@@ -95,9 +117,24 @@
         </div>
     </div>
 
+    <script>
+        // File input handler
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        
+        fileInput.addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                fileName.textContent = '✓ ' + this.files[0].name;
+                fileName.classList.add('text-green-600', 'font-medium');
+            }
+        });
+    </script>
+
     @push('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap4.min.js"></script>
     <script>
         $(function() {
             $('#employeesTable').DataTable({
@@ -105,19 +142,53 @@
                 serverSide: true,
                 ajax: "{{ route('employees.getEmployees') }}",
                 columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', width: '5%', orderable: false, searchable: false},
                     {data: 'nama', name: 'nama'},
                     {data: 'email', name: 'email'},
                     {data: 'departemen', name: 'departemen'},
                     {data: 'jabatan', name: 'jabatan'},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
-                ]
+                    {data: 'action', name: 'action', orderable: false, searchable: false, width: '15%'}
+                ],
+                columnDefs: [
+                    {
+                        targets: -1,
+                        render: function(data, type, row) {
+                            return data;
+                        }
+                    }
+                ],
+                language: {
+                    "processing": "Memproses...",
+                    "lengthMenu": "Tampilkan _MENU_ data",
+                    "zeroRecords": "Tidak ditemukan data",
+                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ data",
+                    "infoEmpty": "Menampilkan 0 hingga 0 dari 0 data",
+                    "infoFiltered": "(difilter dari _MAX_ data total)",
+                    "search": "Cari:",
+                    "paginate": {
+                        "first": "Pertama",
+                        "last": "Terakhir",
+                        "next": "Selanjutnya",
+                        "previous": "Sebelumnya"
+                    }
+                },
+                dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>t<"row"<"col-sm-5"i><"col-sm-7"p>>',
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                drawCallback: function() {
+                    $('.dataTables_paginate').addClass('mt-4 pt-4 border-t border-gray-200');
+                }
             });
         });
     </script>
     @endpush
 
     @push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/employees-table.css') }}">
     @endpush
+
+
 </x-app-layout>

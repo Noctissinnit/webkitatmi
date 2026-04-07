@@ -1,138 +1,112 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center w-full">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Roles Management') }}
-            </h2>
-            <a href="{{ route('roles.create') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none transition ease-in-out duration-150 text-sm font-medium">
-                {{ __('Create Role') }}
-            </a>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Roles Management') }}
+        </h2>
     </x-slot>
 
-    <div class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto space-y-6">
-            <!-- Success Message -->
-            @if (session('success'))
-                <div class="px-4 py-3 rounded-lg bg-green-50 border border-green-200 text-green-700">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <!-- Error Message -->
-            @if (session('error'))
-                <div class="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <!-- Roles Table -->
-            <div class="bg-white overflow-hidden shadow-sm rounded-lg">
-                @if ($roles->count() > 0)
-                    <!-- Desktop Table -->
-                    <div class="hidden md:block overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('Name') }}
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('Permissions') }}
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('Created') }}
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ __('Actions') }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($roles as $role)
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                            {{ $role->name }}
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-500">
-                                            <div class="flex flex-wrap gap-1">
-                                                @forelse ($role->permissions as $permission)
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                                        {{ $permission->name }}
-                                                    </span>
-                                                @empty
-                                                    <span class="text-gray-400 italic">{{ __('No permissions') }}</span>
-                                                @endforelse
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $role->created_at->format('d M Y') }}
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                                            <a href="{{ route('roles.edit', $role) }}" class="text-indigo-600 hover:text-indigo-900 font-medium">
-                                                {{ __('Edit') }}
-                                            </a>
-                                            @if ($role->name !== 'admin')
-                                                <form method="POST" action="{{ route('roles.destroy', $role) }}" class="inline" onsubmit="return confirm('Are you sure?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-900 font-medium">
-                                                        {{ __('Delete') }}
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Mobile Cards -->
-                    <div class="md:hidden divide-y">
-                        @foreach ($roles as $role)
-                            <div class="p-4 space-y-3">
-                                <div class="flex justify-between items-start">
-                                    <span class="font-semibold text-gray-900">{{ $role->name }}</span>
-                                    <span class="text-xs text-gray-500">{{ $role->created_at->format('d M Y') }}</span>
-                                </div>
-                                <div class="flex flex-wrap gap-1">
-                                    @forelse ($role->permissions as $permission)
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                            {{ $permission->name }}
-                                        </span>
-                                    @empty
-                                        <span class="text-gray-400 italic text-sm">{{ __('No permissions') }}</span>
-                                    @endforelse
-                                </div>
-                                <div class="flex gap-3 pt-2 border-t">
-                                    <a href="{{ route('roles.edit', $role) }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
-                                        {{ __('Edit') }}
-                                    </a>
-                                    @if ($role->name !== 'admin')
-                                        <form method="POST" action="{{ route('roles.destroy', $role) }}" class="inline" onsubmit="return confirm('Are you sure?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900 text-sm font-medium">
-                                                {{ __('Delete') }}
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="bg-gray-50 px-4 py-3 border-t">
-                        {{ $roles->links() }}
-                    </div>
-                @else
-                    <div class="p-6 text-center text-gray-500">
-                        {{ __('No roles found. Create one!') }}
-                    </div>
-                @endif
-            </div>
-        </div>
+    <!-- Action Buttons -->
+    <div class="mb-6 flex gap-2 flex-wrap">
+        <a href="{{ route('roles.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors duration-200">
+            <i class="fas fa-plus w-4 h-4"></i>
+            {{ __('Create Role') }}
+        </a>
     </div>
+
+    <!-- Success Message -->
+    @if (session('success'))
+        <div class="mb-4 p-4 rounded-lg bg-green-50 border border-green-200">
+            <p class="text-green-800 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                {{ session('success') }}
+            </p>
+        </div>
+    @endif
+
+    <!-- Error Message -->
+    @if (session('error'))
+        <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-200">
+            <p class="text-red-800 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                {{ session('error') }}
+            </p>
+        </div>
+    @endif
+
+    <!-- Roles Table - Yajra DataTables with Minimalist Modern Styling -->
+    <div class="table-container">
+        <table id="rolesTable" class="w-full">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>{{ __('Name') }}</th>
+                    <th>{{ __('Permissions') }}</th>
+                    <th>{{ __('Created') }}</th>
+                    <th style="text-align: center;">{{ __('Actions') }}</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    @push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/employees-table.css') }}">
+    @endpush
+
+    @push('scripts')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#rolesTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('roles.getRoles') }}',
+                columns: [
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, width: '5%'},
+                    {data: 'name', name: 'name'},
+                    {data: 'permissions', name: 'permissions', orderable: false, searchable: false},
+                    {data: 'created_date', name: 'created_date', orderable: false, searchable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false, width: '15%'}
+                ],
+                columnDefs: [
+                    {
+                        targets: -1,
+                        render: function(data, type, row) {
+                            return data;
+                        }
+                    }
+                ],
+                language: {
+                    "processing": "Memproses...",
+                    "lengthMenu": "Tampilkan _MENU_ data",
+                    "zeroRecords": "Tidak ditemukan data",
+                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ data",
+                    "infoEmpty": "Menampilkan 0 hingga 0 dari 0 data",
+                    "infoFiltered": "(difilter dari _MAX_ data total)",
+                    "search": "Cari:",
+                    "paginate": {
+                        "first": "Pertama",
+                        "last": "Terakhir",
+                        "next": "Selanjutnya",
+                        "previous": "Sebelumnya"
+                    }
+                },
+                dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>t<"row"<"col-sm-5"i><"col-sm-7"p>>',
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                drawCallback: function() {
+                    $('.dataTables_paginate').addClass('mt-4 pt-4 border-t border-gray-200');
+                }
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

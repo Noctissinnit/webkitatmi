@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
@@ -13,9 +14,46 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('roles')->paginate(10);
-        
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index');
+    }
+
+    /**
+     * Get users data for DataTables
+     */
+    public function getUsers()
+    {
+        $users = User::with('roles')->select('users.*');
+
+        return DataTables::of($users)
+            ->addIndexColumn()
+            ->addColumn('roles', function ($row) {
+                $rolesBadge = '';
+                if ($row->roles->count() > 0) {
+                    foreach ($row->roles as $role) {
+                        $rolesBadge .= '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-gray-200 text-gray-900">' . htmlspecialchars($role->name) . '</span> ';
+                    }
+                } else {
+                    $rolesBadge = '<span class="text-gray-400 text-sm">No roles</span>';
+                }
+                return $rolesBadge;
+            })
+            ->addColumn('action', function ($row) {
+                $editBtn = '<a href="' . route('users.edit', $row->id) . '" title="Edit user" style="color:#6b7280;text-decoration:none;font-weight:500;font-size:0.85rem;padding:0;transition:color 0.2s ease;display:inline-flex;align-items:center;gap:0.375rem;border-bottom:2px solid transparent;">';
+                $editBtn .= '<i class="fas fa-edit w-4 h-4"></i> Edit</a>';
+                
+                $deleteBtn = '';
+                if (auth()->user()->id !== $row->id) {
+                    $deleteBtn = '<form action="' . route('users.destroy', $row->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Delete this user?\');">';
+                    $deleteBtn .= '<input type="hidden" name="_method" value="DELETE">';
+                    $deleteBtn .= '<input type="hidden" name="_token" value="' . csrf_token() . '">';
+                    $deleteBtn .= '<button type="submit" title="Delete user" style="color:#9ca3af;text-decoration:none;font-weight:500;font-size:0.85rem;padding:0;transition:color 0.2s ease;display:inline-flex;align-items:center;gap:0.375rem;border-bottom:2px solid transparent;background:none;border:none;cursor:pointer;margin-left:1.5rem;">';
+                    $deleteBtn .= '<i class="fas fa-trash w-4 h-4"></i> Delete</button></form>';
+                }
+                
+                return '<div class="action-links justify-center" style="display:flex;gap:1.5rem;align-items:center;justify-content:center;">' . $editBtn . $deleteBtn . '</div>';
+            })
+            ->rawColumns(['roles', 'action'])
+            ->make(true);
     }
 
     /**
