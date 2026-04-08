@@ -23,6 +23,29 @@
                 setTimeout(() => bubble.remove(), 300);
             }
         }
+
+        // Check if Vite dev server is running
+        if ('{{ app()->environment() }}' === 'local') {
+            fetch('http://localhost:5173/__vite_ping', { mode: 'no-cors' })
+                .catch(() => {
+                    // Dev server tidak running - tampilkan warning
+                    const bubble = document.getElementById('devNotification');
+                    if (bubble && bubble.classList.contains('success')) {
+                        bubble.classList.remove('success');
+                        bubble.classList.add('warning');
+                        bubble.innerHTML = `
+                            <div class="bubble-content">
+                                <div class="bubble-icon">🚨</div>
+                                <div class="bubble-text">
+                                    <p class="bubble-title">NPM DEV SERVER TIDAK BERJALAN!</p>
+                                    <p class="bubble-message">Silakan jalankan: <span class="bubble-code">npm run dev</span> di terminal sebelum development</p>
+                                </div>
+                                <button class="bubble-close" onclick="closeBubble()" aria-label="Close">×</button>
+                            </div>
+                        `;
+                    }
+                });
+        }
     </script>
 
     <!-- NAV -->
@@ -122,27 +145,7 @@
             </div>
         </div>
 
-        <!-- FEATURES -->
-        <section class="features" id="fitur">
-            <div class="feature-item">
-                <div class="feature-index">01</div>
-                <div class="feature-title">Manajemen Peran</div>
-                <p class="feature-desc">Kontrol akses granular dengan sistem hierarki peran yang fleksibel.</p>
-                <a href="{{ route('roles.index') }}" class="feature-link">Kelola Peran</a>
-            </div>
-            <div class="feature-item">
-                <div class="feature-index">02</div>
-                <div class="feature-title">Manajemen Pengguna</div>
-                <p class="feature-desc">Tambah, edit, dan atur seluruh pengguna sistem dari satu tempat.</p>
-                <a href="{{ route('users.index') }}" class="feature-link">Kelola Pengguna</a>
-            </div>
-            <div class="feature-item">
-                <div class="feature-index">03</div>
-                <div class="feature-title">Dashboard Terpadu</div>
-                <p class="feature-desc">Pantau aktivitas dan statistik sistem secara real-time.</p>
-                <a href="{{ route('dashboard') }}" class="feature-link">Buka Dashboard</a>
-            </div>
-        </section>
+     
     </section>
 </body>
 </html>

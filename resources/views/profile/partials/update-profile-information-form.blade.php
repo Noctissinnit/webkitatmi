@@ -13,19 +13,19 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-5">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
         @csrf
         @method('patch')
 
-        <div class="space-y-2">
+        <div class="mb-6">
             <x-input-label for="name" :value="__('Name')" class="text-sm font-medium text-gray-700" />
-            <x-text-input id="name" name="name" type="text" class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" :value="old('name', $user->name)" required autofocus autocomplete="name" />
+            <x-text-input id="name" name="name" type="text" class="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2 text-sm" :messages="$errors->get('name')" />
         </div>
 
-        <div class="space-y-2">
+        <div class="mb-6">
             <x-input-label for="email" :value="__('Email')" class="text-sm font-medium text-gray-700" />
-            <x-text-input id="email" name="email" type="email" class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" :value="old('email', $user->email)" required autocomplete="username" />
+            <x-text-input id="email" name="email" type="email" class="block w-full mt-2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2 text-sm" :messages="$errors->get('email')" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
@@ -47,8 +47,11 @@
             @endif
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        <div class="flex items-center gap-4 pt-6 border-t border-gray-200">
+            <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                <i class="fas fa-check w-4 h-4"></i>
+                {{ __('Save') }}
+            </button>
 
             @if (session('status') === 'profile-updated')
                 <p

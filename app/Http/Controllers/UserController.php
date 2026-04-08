@@ -6,6 +6,7 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -26,6 +27,10 @@ class UserController extends Controller
 
         return DataTables::of($users)
             ->addIndexColumn()
+            ->addColumn('photo', function ($row) {
+                $photoUrl = $row->photo ? asset('storage/' . $row->photo) : 'https://ui-avatars.com/api/?name=' . urlencode($row->name);
+                return '<img src="' . $photoUrl . '" alt="' . htmlspecialchars($row->name) . '" class="w-10 h-10 rounded-full object-cover border border-gray-200">';
+            })
             ->addColumn('roles', function ($row) {
                 $rolesBadge = '';
                 if ($row->roles->count() > 0) {
@@ -52,7 +57,7 @@ class UserController extends Controller
                 
                 return '<div class="action-links justify-center" style="display:flex;gap:1.5rem;align-items:center;justify-content:center;">' . $editBtn . $deleteBtn . '</div>';
             })
-            ->rawColumns(['roles', 'action'])
+            ->rawColumns(['photo', 'roles', 'action'])
             ->make(true);
     }
 
@@ -75,17 +80,25 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email|max:255',
             'password' => 'required|string|min:8|confirmed',
-            'roles' => 'array',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'roles' => 'nullable|array',
         ]);
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('users', 'public');
+        }
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
+            'photo' => $photoPath,
         ]);
 
         if (!empty($validated['roles'])) {
-            $user->syncRoles($validated['roles']);
+            $roles = Role::whereIn('id', $validated['roles'])->pluck('id')->toArray();
+            $user->roles()->sync($roles);
         }
 
         return redirect()->route('users.index')
@@ -120,19 +133,35 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
-            'roles' => 'array',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'roles' => 'nullable|array',
         ]);
 
-        $user->update([
+        $updateData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => $validated['password'] ? bcrypt($validated['password']) : $user->password,
-        ]);
+        ];
 
+        if ($validated['password']) {
+            $updateData['password'] = bcrypt($validated['password']);
+        }
+
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
+            }
+            $updateData['photo'] = $request->file('photo')->store('users', 'public');
+        }
+
+        $user->update($updateData);
+
+        // Sync roles - get Role objects by ID
         if (!empty($validated['roles'])) {
-            $user->syncRoles($validated['roles']);
+            $roles = Role::whereIn('id', $validated['roles'])->pluck('id')->toArray();
+            $user->roles()->sync($roles);
         } else {
-            $user->syncRoles([]);
+            $user->roles()->sync([]);
         }
 
         return redirect()->route('users.index')

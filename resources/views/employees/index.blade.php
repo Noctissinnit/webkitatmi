@@ -51,23 +51,22 @@
     </div>
 
     <!-- DataTable - Minimalist Modern -->
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
-        <div class="overflow-x-auto">
-            <table id="employeesTable" class="w-full">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Departemen</th>
-                        <th>Jabatan</th>
-                        <th style="text-align: center;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
+    <div class="table-container">
+        <table id="employeesTable" class="w-full">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Foto</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Departemen</th>
+                    <th>Jabatan</th>
+                    <th style="text-align: center;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 
     <!-- Import Modal -->
@@ -136,13 +135,14 @@
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap4.min.js"></script>
     <script>
-        $(function() {
+        $(document).ready(function() {
             $('#employeesTable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('employees.getEmployees') }}",
                 columns: [
-                    {data: 'DT_RowIndex', name: 'DT_RowIndex', width: '5%', orderable: false, searchable: false},
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, width: '5%'},
+                    {data: 'photo', name: 'photo', orderable: false, searchable: false, width: '8%'},
                     {data: 'nama', name: 'nama'},
                     {data: 'email', name: 'email'},
                     {data: 'departemen', name: 'departemen'},

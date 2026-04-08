@@ -5,7 +5,7 @@
             <button @click="dropdownOpen = !dropdownOpen"
                 class="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition">
                 <img class="w-8 h-8 rounded-full object-cover bg-gray-100"
-                     src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}"
+                     src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}"
                      alt="User avatar">
                 <div class="flex-1 text-left">
                     <p class="font-medium text-gray-900 text-sm">{{ Auth::user()->name }}</p>

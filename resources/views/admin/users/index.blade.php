@@ -41,6 +41,7 @@
             <thead>
                 <tr>
                     <th>No</th>
+                    <th>Photo</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Roles</th>
@@ -69,6 +70,7 @@
                 ajax: '{{ route('users.getUsers') }}',
                 columns: [
                     {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, width: '5%'},
+                    {data: 'photo', name: 'photo', orderable: false, searchable: false, width: '8%'},
                     {data: 'name', name: 'name'},
                     {data: 'email', name: 'email'},
                     {data: 'roles', name: 'roles', orderable: false, searchable: false},
@@ -82,6 +84,7 @@
                         }
                     }
                 ],
+                rawColumns: ['photo', 'roles', 'action'],
                 language: {
                     "processing": "Memproses...",
                     "lengthMenu": "Tampilkan _MENU_ data",

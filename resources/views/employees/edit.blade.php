@@ -5,60 +5,155 @@
         </h2>
     </x-slot>
 
-    <div class="bg-white rounded-lg shadow p-6">
-        <form action="{{ route('employees.update', $employee->id) }}" method="POST" class="space-y-6">
+    <!-- Back Button -->
+    <div class="mb-6">
+        <a href="{{ route('employees.index') }}" class="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+            <i class="fas fa-arrow-left w-4 h-4"></i>
+            {{ __('Back to Employees') }}
+        </a>
+    </div>
+
+    <!-- Form Container -->
+    <div class="table-container" style="max-width: 600px;">
+        <form action="{{ route('employees.update', $employee->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
+            <!-- Photo Upload -->
+            <div class="mb-6">
+                <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ __('Employee Photo') }}
+                </label>
+                <div class="flex gap-4 items-start">
+                    <div class="flex-1">
+                        <input 
+                            type="file" 
+                            id="photo" 
+                            name="photo" 
+                            accept="image/*"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                        >
+                        <p class="mt-1 text-xs text-gray-500">{{ __('JPG, PNG up to 2MB') }}</p>
+                        @error('photo')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div id="photoPreview" class="hidden">
+                        <img id="previewImg" src="" alt="Preview" class="w-20 h-20 rounded-lg object-cover border border-gray-300">
+                    </div>
+                </div>
+            </div>
+
             <!-- Nama -->
-            <div>
-                <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-                <input type="text" id="nama" name="nama" value="{{ old('nama', $employee->nama) }}" required
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:outline-none @error('nama') border-red-500 @enderror">
+            <div class="mb-6">
+                <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">Nama</label>
+                <input 
+                    type="text" 
+                    id="nama" 
+                    name="nama" 
+                    value="{{ old('nama', $employee->nama) }}" 
+                    required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent @error('nama') border-red-500 @enderror"
+                >
                 @error('nama')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Email -->
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" id="email" name="email" value="{{ old('email', $employee->email) }}" required
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:outline-none @error('email') border-red-500 @enderror">
+            <div class="mb-6">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    value="{{ old('email', $employee->email) }}" 
+                    required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent @error('email') border-red-500 @enderror"
+                >
                 @error('email')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Departemen -->
-            <div>
-                <label for="departemen" class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
-                <input type="text" id="departemen" name="departemen" value="{{ old('departemen', $employee->departemen) }}" required
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:outline-none @error('departemen') border-red-500 @enderror">
+            <div class="mb-6">
+                <label for="departemen" class="block text-sm font-medium text-gray-700 mb-2">Departemen</label>
+                <input 
+                    type="text" 
+                    id="departemen" 
+                    name="departemen" 
+                    value="{{ old('departemen', $employee->departemen) }}" 
+                    required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent @error('departemen') border-red-500 @enderror"
+                >
                 @error('departemen')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Jabatan -->
-            <div>
-                <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-1">Jabatan</label>
-                <input type="text" id="jabatan" name="jabatan" value="{{ old('jabatan', $employee->jabatan) }}" required
-                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:outline-none @error('jabatan') border-red-500 @enderror">
+            <div class="mb-6">
+                <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-2">Jabatan</label>
+                <input 
+                    type="text" 
+                    id="jabatan" 
+                    name="jabatan" 
+                    value="{{ old('jabatan', $employee->jabatan) }}" 
+                    required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent @error('jabatan') border-red-500 @enderror"
+                >
                 @error('jabatan')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Buttons -->
-            <div class="flex gap-3 pt-4">
-                <a href="{{ route('employees.index') }}" class="flex-1 px-4 py-2 text-gray-700 border-2 border-gray-300 rounded-lg hover:bg-gray-50 text-center">
-                    Batal
+            <div class="flex gap-3 justify-end pt-6 border-t border-gray-200">
+                <a 
+                    href="{{ route('employees.index') }}" 
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                    <i class="fas fa-times w-4 h-4"></i>
+                    {{ __('Cancel') }}
                 </a>
-                <button type="submit" class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                    Update
+                <button 
+                    type="submit" 
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                >
+                    <i class="fas fa-check w-4 h-4"></i>
+                    {{ __('Update') }}
                 </button>
             </div>
         </form>
     </div>
+
+    @push('scripts')
+    <script>
+        const photoInput = document.getElementById('photo');
+        const photoPreview = document.getElementById('photoPreview');
+        const previewImg = document.getElementById('previewImg');
+
+        if (photoInput) {
+            photoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        previewImg.src = event.target.result;
+                        photoPreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    photoPreview.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+    @endpush
+
+    @push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/employees-table.css') }}">
+    @endpush
 </x-app-layout>

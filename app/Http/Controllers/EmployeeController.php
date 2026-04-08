@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeController extends Controller
 {
@@ -34,8 +35,15 @@ class EmployeeController extends Controller
             'email' => 'required|email|unique:employees',
             'departemen' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('employees', 'public');
+        }
+
+        $validated['photo'] = $photoPath;
         Employee::create($validated);
 
         return redirect()->route('employees.index')
@@ -60,7 +68,16 @@ class EmployeeController extends Controller
             'email' => 'required|email|unique:employees,email,' . $employee->id,
             'departemen' => 'required|string|max:255',
             'jabatan' => 'required|string|max:255',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($employee->photo && Storage::disk('public')->exists($employee->photo)) {
+                Storage::disk('public')->delete($employee->photo);
+            }
+            $validated['photo'] = $request->file('photo')->store('employees', 'public');
+        }
 
         $employee->update($validated);
 
@@ -90,6 +107,10 @@ class EmployeeController extends Controller
             return datatables()
                 ->eloquent($data)
                 ->addIndexColumn()
+                ->addColumn('photo', function($row){
+                    $photoUrl = $row->photo ? asset('storage/' . $row->photo) : 'https://ui-avatars.com/api/?name=' . urlencode($row->nama);
+                    return '<img src="'.$photoUrl.'" alt="'.$row->nama.'" class="w-10 h-10 rounded-full object-cover border border-gray-200">';
+                })
                 ->addColumn('action', function($row){
                     $edit = '<a href="'.route('employees.edit', $row->id).'" class="text-indigo-600 hover:text-indigo-700 font-medium">Edit</a>';
                     
@@ -101,7 +122,7 @@ class EmployeeController extends Controller
                     
                     return '<div class="employees-table-actions">'.$edit.' | '.$delete.'</div>';
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['photo', 'action'])
                 ->make(true);
         }
     }

@@ -76,7 +76,7 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|unique:roles,name|max:255',
-            'permissions' => 'array',
+            'permissions' => 'nullable|array',
         ]);
 
         $role = Role::create([
@@ -85,7 +85,8 @@ class RoleController extends Controller
         ]);
 
         if (!empty($validated['permissions'])) {
-            $role->syncPermissions($validated['permissions']);
+            $permissions = Permission::whereIn('id', $validated['permissions'])->pluck('id')->toArray();
+            $role->permissions()->sync($permissions);
         }
 
         return redirect()->route('roles.index')
@@ -118,7 +119,7 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
-            'permissions' => 'array',
+            'permissions' => 'nullable|array',
         ]);
 
         $role->update([
@@ -126,9 +127,10 @@ class RoleController extends Controller
         ]);
 
         if (!empty($validated['permissions'])) {
-            $role->syncPermissions($validated['permissions']);
+            $permissions = Permission::whereIn('id', $validated['permissions'])->pluck('id')->toArray();
+            $role->permissions()->sync($permissions);
         } else {
-            $role->syncPermissions([]);
+            $role->permissions()->sync([]);
         }
 
         return redirect()->route('roles.index')
