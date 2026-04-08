@@ -104,12 +104,34 @@
             <span>{{ __('Karyawan') }}</span>
         </x-sidebar-link>
 
+        <!-- Positions -->
+        <x-sidebar-link 
+            href="{{ route('positions.index') }}" 
+            :active="request()->routeIs('positions.*')"
+        >
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>{{ __('Jabatan') }}</span>
+        </x-sidebar-link>
+
+        <!-- Departments -->
+        <x-sidebar-link 
+            href="{{ route('departments.index') }}" 
+            :active="request()->routeIs('departments.*')"
+        >
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+            </svg>
+            <span>{{ __('Department') }}</span>
+        </x-sidebar-link>
+
         <div class="pt-4 pb-1">
             <h3 class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ __('Pages') }}</h3>
         </div>
 
          <x-sidebar-link 
-            href="{{ url('/') }}" 
+            href="{{ url('/home') }}" 
             :active="request()->routeIs('welcome')"
         >
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

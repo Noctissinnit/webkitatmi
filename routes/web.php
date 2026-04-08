@@ -4,12 +4,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PositionController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EmployeeController as AdminEmployeeController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
-Route::get('/', function () {
+Route::get('/home', function () {
     return view('welcome');
 })->name('home');
 
@@ -45,6 +47,14 @@ Route::middleware('auth')->group(function () {
         // Role management
         Route::get('roles/data', [RoleController::class, 'getRoles'])->name('roles.getRoles');
         Route::resource('roles', RoleController::class);
+        
+        // Position (Jabatan) management
+        Route::get('positions/data', [PositionController::class, 'getPositions'])->name('positions.getData');
+        Route::resource('positions', PositionController::class);
+        
+        // Department management
+        Route::get('departments/data', [DepartmentController::class, 'getDepartments'])->name('departments.getData');
+        Route::resource('departments', DepartmentController::class);
         
         // Employee management
         Route::get('admin/employees/data', [AdminEmployeeController::class, 'getEmployees'])->name('admin.employees.getData');
