@@ -77,32 +77,42 @@
 
             <!-- Departemen -->
             <div class="mb-6">
-                <label for="departemen" class="block text-sm font-medium text-gray-700 mb-2">Departemen</label>
-                <input 
-                    type="text" 
-                    id="departemen" 
-                    name="departemen" 
-                    value="{{ old('departemen') }}" 
+                <label for="department_id" class="block text-sm font-medium text-gray-700 mb-2">Departemen</label>
+                <select 
+                    id="department_id" 
+                    name="department_id" 
                     required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent @error('departemen') border-red-500 @enderror"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent @error('department_id') border-red-500 @enderror"
                 >
-                @error('departemen')
+                    <option value="">-- Pilih Departemen --</option>
+                    @foreach($departments as $dept)
+                        <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                            {{ $dept->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('department_id')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Jabatan -->
             <div class="mb-6">
-                <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-2">Jabatan</label>
-                <input 
-                    type="text" 
-                    id="jabatan" 
-                    name="jabatan" 
-                    value="{{ old('jabatan') }}" 
+                <label for="position_id" class="block text-sm font-medium text-gray-700 mb-2">Jabatan</label>
+                <select 
+                    id="position_id" 
+                    name="position_id" 
                     required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent @error('jabatan') border-red-500 @enderror"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent @error('position_id') border-red-500 @enderror"
                 >
-                @error('jabatan')
+                    <option value="">-- Pilih Jabatan --</option>
+                    @foreach($positions as $pos)
+                        <option value="{{ $pos->id }}" {{ old('position_id') == $pos->id ? 'selected' : '' }}>
+                            {{ $pos->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('position_id')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>

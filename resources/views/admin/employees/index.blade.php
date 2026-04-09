@@ -1,197 +1,111 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Karyawan') }}
+            {{ __('Data Karyawan') }}
         </h2>
     </x-slot>
 
-    <!-- Alert Messages -->
-    @if ($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>{{ __('Whoops!') }}</strong> {{ __('There were some problems with your input.') }}<br><br>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <!-- Action Buttons -->
+    <div class="mb-6 flex gap-2 flex-wrap">
+        <a href="{{ route('employees.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors duration-200">
+            <i class="fas fa-plus w-4 h-4"></i>
+            {{ __('Tambah Karyawan') }}
+        </a>
+    </div>
+
+    @if (session('success'))
+        <div class="mb-4 p-4 rounded-lg bg-green-50 border border-green-200">
+            <p class="text-green-800 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                {{ session('success') }}
+            </p>
         </div>
     @endif
 
-    @if (count($errors) == 0 && Session::has('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ Session::get('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    @if (session('error'))
+        <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-200">
+            <p class="text-red-800 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                {{ session('error') }}
+            </p>
         </div>
     @endif
 
-    <!-- Table Container -->
     <div class="table-container">
-        <!-- Header with Controls -->
-        <div class="table-header">
-            <h3 class="table-title">{{ __('Daftar Karyawan') }}</h3>
-            <div class="table-actions">
-                <button class="btn btn-secondary" id="importBtn" type="button">
-                    <i class="fas fa-upload"></i> {{ __('Import') }}
-                </button>
-                <a href="{{ route('employees.export') }}" class="btn btn-secondary">
-                    <i class="fas fa-download"></i> {{ __('Export') }}
-                </a>
-                <a href="{{ route('employees.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> {{ __('Tambah Karyawan') }}
-                </a>
-            </div>
-        </div>
-
-        <!-- DataTables Search -->
-        <div class="table-search-wrapper">
-            <div class="table-search">
-                <i class="fas fa-search"></i>
-                <input 
-                    type="text" 
-                    id="searchInput" 
-                    placeholder="{{ __('Search...') }}" 
-                    class="form-control"
-                >
-            </div>
-        </div>
-
-        <!-- Table -->
-        <table id="employeesTable" class="table table-striped table-hover">
+        <table id="employeesTable" class="w-full">
             <thead>
                 <tr>
-                    <th>{{ __('Photo') }}</th>
-                    <th>{{ __('Nama') }}</th>
-                    <th>{{ __('Email') }}</th>
-                    <th>{{ __('Departemen') }}</th>
-                    <th>{{ __('Jabatan') }}</th>
-                    <th>{{ __('Actions') }}</th>
+                    <th>No</th>
+                    <th>Foto</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Departemen</th>
+                    <th>Jabatan</th>
+                    <th style="text-align: center;">Aksi</th>
                 </tr>
             </thead>
-            <tbody>
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
 
-    <!-- Import Modal -->
-    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="importModalLabel">{{ __('Import Karyawan') }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form action="{{ route('employees.import') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="file">{{ __('Select Excel File') }}</label>
-                            <input 
-                                type="file" 
-                                name="file" 
-                                id="file" 
-                                class="form-control" 
-                                accept=".xlsx,.xls,.csv" 
-                                required
-                            >
-                            <small class="form-text text-muted">{{ __('Supported: xlsx, xls, csv') }}</small>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                            {{ __('Cancel') }}
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            {{ __('Import') }}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     @push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="{{ asset('css/employees-table.css') }}">
     @endpush
 
     @push('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
-
     <script>
         $(document).ready(function() {
-            // Initialize DataTable
-            const table = $('#employeesTable').DataTable({
+            $('#employeesTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: {
-                    url: "{{ route('employees.getData') }}",
-                    type: 'GET'
-                },
+                ajax: '{{ route('employees.getEmployees') }}',
                 columns: [
-                    {data: 'photo', name: 'photo', searchable: false, orderable: false, render: function(data) {
-                        if (data) {
-                            return '<img src="/storage/' + data + '" alt="photo" class="table-avatar">';
-                        }
-                        return '<div class="table-avatar-placeholder"><i class="fas fa-user"></i></div>';
-                    }},
+                    {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, width: '5%'},
+                    {data: 'photo', name: 'photo', orderable: false, searchable: false, width: '10%'},
                     {data: 'nama', name: 'nama'},
                     {data: 'email', name: 'email'},
-                    {data: 'departemen', name: 'departemen'},
-                    {data: 'jabatan', name: 'jabatan'},
-                    {data: 'action', name: 'action', searchable: false, orderable: false}
+                    {data: 'departemen', name: 'departemen', searchable: false, orderable: false},
+                    {data: 'jabatan', name: 'jabatan', searchable: false, orderable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false, width: '15%'}
                 ],
-                order: [[1, 'asc']],
-                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-                pageLength: 10,
-                language: {
-                    processing: '<i class="fas fa-spinner fa-spin"></i> Loading...',
-                    emptyTable: '{{ __("No data available") }}',
-                    zeroRecords: '{{ __("No matching records found") }}',
-                    info: '{{ __("Showing _START_ to _END_ of _TOTAL_ entries") }}',
-                    infoEmpty: '{{ __("Showing 0 to 0 of 0 entries") }}',
-                    infoFiltered: '{{ __("(filtered from _MAX_ total entries)") }}',
-                    lengthMenu: '{{ __("Show _MENU_ entries") }}',
-                    search: '{{ __("Search:") }}'
-                }
-            });
-
-            // Search functionality
-            $('#searchInput').on('keyup', function() {
-                table.search(this.value).draw(false);
-            });
-
-            // Import button
-            $('#importBtn').on('click', function() {
-                $('#importModal').modal('show');
-            });
-
-            // Delete confirmation
-            $(document).on('click', '.btn-delete', function(e) {
-                e.preventDefault();
-                const deleteUrl = $(this).attr('href');
-                
-                if (confirm('{{ __("Are you sure?") }}')) {
-                    $.ajax({
-                        url: deleteUrl,
-                        type: 'POST',
-                        data: {
-                            _method: 'DELETE',
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function() {
-                            table.ajax.reload();
-                            alert('{{ __("Employee deleted successfully") }}');
-                        },
-                        error: function() {
-                            alert('{{ __("Error deleting employee") }}');
+                columnDefs: [
+                    {
+                        targets: -1,
+                        render: function(data, type, row) {
+                            return data;
                         }
-                    });
+                    }
+                ],
+                rawColumns: ['foto', 'departemen', 'jabatan', 'action'],
+                language: {
+                    "processing": "Memproses...",
+                    "lengthMenu": "Tampilkan _MENU_ data",
+                    "zeroRecords": "Tidak ditemukan data",
+                    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ data",
+                    "infoEmpty": "Menampilkan 0 hingga 0 dari 0 data",
+                    "infoFiltered": "(difilter dari _MAX_ data total)",
+                    "search": "Cari:",
+                    "paginate": {
+                        "first": "Pertama",
+                        "last": "Terakhir",
+                        "next": "Selanjutnya",
+                        "previous": "Sebelumnya"
+                    }
+                },
+                dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>t<"row"<"col-sm-5"i><"col-sm-7"p>>',
+                pageLength: 10,
+                lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                drawCallback: function() {
+                    $('.dataTables_paginate').addClass('mt-4 pt-4 border-t border-gray-200');
                 }
             });
         });

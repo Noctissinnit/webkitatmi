@@ -7,7 +7,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\EmployeeController as AdminEmployeeController;
+// use App\Http\Controllers\Admin\EmployeeController as AdminEmployeeController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -57,11 +57,11 @@ Route::middleware('auth')->group(function () {
         Route::resource('departments', DepartmentController::class);
         
         // Employee management
-        Route::get('admin/employees/data', [AdminEmployeeController::class, 'getEmployees'])->name('admin.employees.getData');
-        Route::resource('admin/employees', AdminEmployeeController::class, [
-            'names' => 'admin.employees',
-            'parameters' => ['employees' => 'employee'],
-        ]);
+        // Route::get('admin/employees/data', [AdminEmployeeController::class, 'getEmployees'])->name('admin.employees.getData');
+        // Route::resource('admin/employees', AdminEmployeeController::class, [
+        //     'names' => 'admin.employees',
+        //     'parameters' => ['employees' => 'employee'],
+        // ]);
     });
 });
 

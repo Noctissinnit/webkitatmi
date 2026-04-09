@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\Employee;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class EmployeeController extends Controller
 {
@@ -22,7 +25,9 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        return view('admin.employees.create');
+        $departments = Department::all();
+        $positions = Position::all();
+        return view('admin.employees.create', compact('departments', 'positions'));
     }
 
     /**
@@ -33,8 +38,8 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:employees',
-            'departemen' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:255',
+            'department_id' => 'required|exists:departments,id',
+            'position_id' => 'required|exists:positions,id',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -55,7 +60,9 @@ class EmployeeController extends Controller
      */
     public function edit(Employee $employee)
     {
-        return view('admin.employees.edit', compact('employee'));
+        $departments = Department::all();
+        $positions = Position::all();
+        return view('admin.employees.edit', compact('employee', 'departments', 'positions'));
     }
 
     /**
@@ -66,8 +73,8 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:employees,email,' . $employee->id,
-            'departemen' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:255',
+            'department_id' => 'required|exists:departments,id',
+            'position_id' => 'required|exists:positions,id',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -101,30 +108,33 @@ class EmployeeController extends Controller
      */
     public function getEmployees(Request $request)
     {
-        if ($request->ajax()) {
-            $data = Employee::query();
+        $data = Employee::with('department', 'position')->get();
 
-            return datatables()
-                ->eloquent($data)
-                ->addIndexColumn()
-                ->addColumn('photo', function($row){
-                    $photoUrl = $row->photo ? asset('storage/' . $row->photo) : 'https://ui-avatars.com/api/?name=' . urlencode($row->nama);
-                    return '<img src="'.$photoUrl.'" alt="'.$row->nama.'" class="w-10 h-10 rounded-full object-cover border border-gray-200">';
-                })
-                ->addColumn('action', function($row){
-                    $edit = '<a href="'.route('employees.edit', $row->id).'" class="text-indigo-600 hover:text-indigo-700 font-medium">Edit</a>';
-                    
-                    $delete = '<form action="'.route('employees.destroy', $row->id).'" method="POST" class="inline" onsubmit="return confirm(\'Yakin ingin menghapus?\');">';
-                    $delete .= csrf_field();
-                    $delete .= method_field('DELETE');
-                    $delete .= '<button type="submit" class="text-red-600 hover:text-red-700 font-medium">Hapus</button>';
-                    $delete .= '</form>';
-                    
-                    return '<div class="employees-table-actions">'.$edit.' | '.$delete.'</div>';
-                })
-                ->rawColumns(['photo', 'action'])
-                ->make(true);
-        }
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('photo', function($row){
+                $photoUrl = $row->photo ? asset('storage/' . $row->photo) : 'https://ui-avatars.com/api/?name=' . urlencode($row->nama);
+                return '<img src="'.$photoUrl.'" alt="'.$row->nama.'" class="w-10 h-10 rounded-full object-cover border border-gray-200">';
+            })
+            ->addColumn('departemen', function($row){
+                return $row->department ? $row->department->name : '-';
+            })
+            ->addColumn('jabatan', function($row){
+                return $row->position ? $row->position->name : '-';
+            })
+            ->addColumn('action', function($row){
+                $edit = '<a href="'.route('employees.edit', $row->id).'" title="Edit" style="color:#6b7280;text-decoration:none;font-weight:500;font-size:0.85rem;padding:0;transition:color 0.2s ease;display:inline-flex;align-items:center;gap:0.375rem;border-bottom:2px solid transparent;"><i class="fas fa-edit w-4 h-4"></i> Edit</a>';
+                
+                $delete = '<form action="'.route('employees.destroy', $row->id).'" method="POST" style="display:inline;" onsubmit="return confirm(\'Apakah Anda yakin?\');">';
+                $delete .= '<input type="hidden" name="_method" value="DELETE">';
+                $delete .= '<input type="hidden" name="_token" value="' . csrf_token() . '">';
+                $delete .= '<button type="submit" title="Delete" style="color:#9ca3af;text-decoration:none;font-weight:500;font-size:0.85rem;padding:0;transition:color 0.2s ease;display:inline-flex;align-items:center;gap:0.375rem;border-bottom:2px solid transparent;background:none;border:none;cursor:pointer;margin-left:1.5rem;"><i class="fas fa-trash w-4 h-4"></i> Hapus</button>';
+                $delete .= '</form>';
+                
+                return '<div class="action-links justify-center" style="display:flex;gap:1.5rem;align-items:center;justify-content:center;">'.$edit.' '.$delete.'</div>';
+            })
+            ->rawColumns(['photo', 'departemen', 'jabatan', 'action'])
+            ->make(true);
     }
 
     /**
