@@ -10,12 +10,12 @@ class DepartmentController extends Controller
 {
     public function index()
     {
-        return view('departments.index');
+        return view('admin.departments.index');
     }
 
     public function create()
     {
-        return view('departments.create');
+        return view('admin.departments.create');
     }
 
     public function store(Request $request)
@@ -31,7 +31,7 @@ class DepartmentController extends Controller
 
     public function edit(Department $department)
     {
-        return view('departments.edit', compact('department'));
+        return view('admin.departments.edit', compact('department'));
     }
 
     public function update(Request $request, Department $department)

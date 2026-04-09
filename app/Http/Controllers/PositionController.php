@@ -10,12 +10,12 @@ class PositionController extends Controller
 {
     public function index()
     {
-        return view('positions.index');
+        return view('admin.positions.index');
     }
 
     public function create()
     {
-        return view('positions.create');
+        return view('admin.positions.create');
     }
 
     public function store(Request $request)
@@ -31,7 +31,7 @@ class PositionController extends Controller
 
     public function edit(Position $position)
     {
-        return view('positions.edit', compact('position'));
+        return view('admin.positions.edit', compact('position'));
     }
 
     public function update(Request $request, Position $position)

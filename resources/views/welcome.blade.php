@@ -57,9 +57,7 @@
                     <a href="{{ url('/dashboard') }}" class="btn-solid">Dashboard</a>
                 @else
                     <a href="{{ route('login') }}" class="btn-ghost">Masuk</a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="btn-solid">Daftar</a>
-                    @endif
+                  
                 @endauth
             </div>
         @endif
